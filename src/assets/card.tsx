@@ -51,4 +51,5 @@ const Cards = [
   { id: 50, rank: 11, suit: "Hearts", color: "Red", name: "Jack", face: "open" },
   { id: 51, rank: 12, suit: "Hearts", color: "Red", name: "Queen", face: "open" },
   { id: 52, rank: 13, suit: "Hearts", color: "Red", name: "King", face: "open" },
+  { id: 52, rank: 13, suit: "Hearts", color: "Red", name: "King", face: "open" },
 ];
