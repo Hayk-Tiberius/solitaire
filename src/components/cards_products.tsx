@@ -1,29 +1,42 @@
+import { useState } from "react";
 import { type ICard } from "../models";
-import { min, max } from "../models";
+import { arr_deck } from "../models";
 
 interface CardProps {
   card: ICard;
 }
 
-const field_card = Math.floor(Math.random() * (max - min) + min);
-
 export function Product(props: CardProps) {
+  const [array, _] = useState(arr_deck);
+  const [count, setCount] = useState(0);
+
+  const nextIndex = () => {
+    count < arr_deck.length - 1 ? setCount(count + 1) : setCount(0);
+  };
+
+  const totalColumns: number = 7;
+
   return (
     <>
       <main>
+        <section className="deck">
+          <button onClick={nextIndex}>Next card</button>
+          <span>{array[count]}</span>
+        </section>
         <section
           className="field"
           style={{ display: "grid", gridTemplateColumns: "repeat(7, 100px)" }}
         >
-          <div>
-            <span>{field_card}</span>
-          </div>
-          <div>2</div>
-          <div>3</div>
-          <div>4</div>
-          <div>5</div>
-          <div>6</div>
-          <div>7</div>
+          {Array.from({ length: totalColumns }, (_, divIndex) => (
+            <div key={`div-${divIndex}`}>
+              {Array.from({ length: divIndex + 1 }, (_, spanIndex) => (
+                <span key={`span-${divIndex}-${spanIndex}`}>
+                  {1}
+                  <br />
+                </span>
+              ))}
+            </div>
+          ))}
         </section>
       </main>
     </>
