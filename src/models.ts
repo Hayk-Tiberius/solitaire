@@ -40,4 +40,8 @@ for (let i: number = 0; i < 28; i++) {
   arr_deck.shift();
 }
 
+for (let i: number = 0; i < 28; i++) {
+  arr_deck.shift();
+}
+
 export { arr_unique, arr_field, arr_deck };
