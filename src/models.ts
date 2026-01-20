@@ -32,8 +32,17 @@ for (let i: number = 0; i < 28; i++) {
   arr_field.push(arr_unique[i]);
 }
 
+let chunkSize = 1;
+const chunkedArray: number[][] = [];
+while (arr_field.length) {
+  chunkedArray.push(arr_field.splice(0, chunkSize));
+  chunkSize += 1;
+}
+
+console.log(chunkedArray);
+
 for (let i: number = 0; i < 28; i++) {
   arr_deck.shift();
 }
 
-export { arr_unique, arr_field, arr_deck };
+export { arr_unique, chunkedArray, arr_deck };

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { type ICard } from "../models";
-import { arr_deck, arr_field } from "../models";
+import { arr_deck, chunkedArray } from "../models";
 
 interface CardProps {
   card: ICard;
@@ -31,7 +31,7 @@ export function Product(props: CardProps) {
             <div key={`div-${divIndex}`}>
               {Array.from({ length: divIndex + 1 }, (_, spanIndex) => (
                 <span key={`span-${divIndex}-${spanIndex}`}>
-                  {arr_field[1]}
+                  {chunkedArray[divIndex][spanIndex]}
                   <br />
                 </span>
               ))}
