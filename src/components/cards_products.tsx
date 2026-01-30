@@ -10,6 +10,15 @@ export function Product(props: CardProps) {
   const [array, _] = useState(arr_deck);
   const [count, setCount] = useState(0);
 
+  //// Хук для финального стэка тут /////
+
+  const [clubs, setClubs] = useState<ICard[]>([]);
+  const [spades, setSpades] = useState<ICard[]>([]);
+  const [diamonds, setDiamonds] = useState<ICard[]>([]);
+  const [hearts, setHearts] = useState<ICard[]>([]);
+
+  ////////////////////////////
+
   const nextIndex = () => {
     count < arr_deck.length - 1 ? setCount(count + 1) : setCount(0);
   };
@@ -21,7 +30,13 @@ export function Product(props: CardProps) {
       <main>
         <section className="deck">
           <button onClick={nextIndex}>Next card</button>
-          <span>{array[count]}</span>
+          <span>{`${array[count].name} of ${array[count].suit}`}</span>
+        </section>
+        <section className="finalStack">
+          <div className="clubs_stack">Крести</div>
+          <div className="spades_stack">Пики</div>
+          <div className="diamonds_stack">Бубе</div>
+          <div className="hearts_stack">Сердца</div>
         </section>
         <section
           className="field"
@@ -31,7 +46,7 @@ export function Product(props: CardProps) {
             <div key={`div-${divIndex}`}>
               {Array.from({ length: divIndex + 1 }, (_, spanIndex) => (
                 <span key={`span-${divIndex}-${spanIndex}`}>
-                  {chunkedArray[divIndex][spanIndex]}
+                  {`${chunkedArray[divIndex][spanIndex].name} of ${chunkedArray[divIndex][spanIndex].suit}`}
                   <br />
                 </span>
               ))}

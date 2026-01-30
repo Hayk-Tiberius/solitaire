@@ -24,26 +24,22 @@ while (unique.size < count) {
   let n = Math.floor(Math.random() * 52) + 1;
   unique.add(n);
 }
-let arr_unique: number[] = [...unique];
-let arr_deck: number[] = arr_unique;
+let arr_unique: ICard[] = [...unique].map((index) => cards[index]);
+let arr_deck: ICard[] = arr_unique;
 
-let arr_field: number[] = [];
+let arr_field: ICard[] = [];
 for (let i: number = 0; i < 28; i++) {
   arr_field.push(arr_unique[i]);
 }
 
 let chunkSize = 1;
-const chunkedArray: number[][] = [];
+const chunkedArray: ICard[][] = [];
 while (arr_field.length) {
   chunkedArray.push(arr_field.splice(0, chunkSize));
   chunkSize += 1;
 }
 
 console.log(chunkedArray);
-
-for (let i: number = 0; i < 28; i++) {
-  arr_deck.shift();
-}
 
 for (let i: number = 0; i < 28; i++) {
   arr_deck.shift();
