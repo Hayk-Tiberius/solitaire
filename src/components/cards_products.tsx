@@ -17,6 +17,25 @@ export function Product(props: CardProps) {
   const [diamonds, setDiamonds] = useState<ICard[]>([]);
   const [hearts, setHearts] = useState<ICard[]>([]);
 
+  const nextIndexSpadesSuit = (card: ICard) => {
+    setClubs((prevClubs) => {
+      if (prevClubs.length === 0) {
+        if (card.suit === "Clubs" && card.rank === 1) {
+          return [...prevClubs, card];
+        }
+        return prevClubs;
+      }
+
+      const topCard = prevClubs[prevClubs.length - 1];
+
+      if (card.suit === "Clubs" && card.rank === topCard.rank + 1) {
+        return [...prevClubs, card];
+      }
+
+      return prevClubs;
+    });
+  };
+
   ////////////////////////////
 
   const nextIndex = () => {
@@ -33,8 +52,8 @@ export function Product(props: CardProps) {
           <span>{`${array[count].name} of ${array[count].suit}`}</span>
         </section>
         <section className="finalStack">
-          <div className="clubs_stack">Крести</div>
-          <div className="spades_stack">Пики</div>
+          <div className="clubs_stack">Крести {clubs.length}</div>
+          <div className="spades_stack">Пики {clubs.length}</div>
           <div className="diamonds_stack">Бубе</div>
           <div className="hearts_stack">Сердца</div>
         </section>
@@ -45,7 +64,10 @@ export function Product(props: CardProps) {
           {Array.from({ length: totalColumns }, (_, divIndex) => (
             <div key={`div-${divIndex}`}>
               {Array.from({ length: divIndex + 1 }, (_, spanIndex) => (
-                <span key={`span-${divIndex}-${spanIndex}`}>
+                <span
+                  key={`span-${divIndex}-${spanIndex}`}
+                  onClick={() => nextIndexSpadesSuit(chunkedArray[divIndex][spanIndex])}
+                >
                   {`${chunkedArray[divIndex][spanIndex].name} of ${chunkedArray[divIndex][spanIndex].suit}`}
                   <br />
                 </span>
