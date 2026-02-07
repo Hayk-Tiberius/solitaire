@@ -10,14 +10,15 @@ export interface ICard {
 }
 type Suit = "Clubs" | "Spades" | "Diamonds" | "Hearts";
 
-export interface GameState {
-  card_pack: ICard[];
-  tableau: ICard[][];
-}
-
 export const min: number = 1;
 
 export const max: number = cards.length;
+
+export interface GameState {
+  card_pack: ICard[];
+  surface_cards: ICard[];
+  tableau: ICard[][];
+}
 
 export interface CardSize {
   maxId: number;
@@ -25,34 +26,24 @@ export interface CardSize {
 }
 
 function GameStart(): GameState {
-  function uniqueCard(unique = new Set<number>()) {
-    while (unique.size < cards.length) {
-      let n = Math.floor(Math.random() * cards.length);
-      unique.add(n);
-    }
-
-    let card_pack: ICard[] = [...unique].map((index) => cards[index]);
-    return { card_pack };
+  let unique = new Set<number>();
+  while (unique.size < cards.length) {
+    let n = Math.floor(Math.random() * cards.length);
+    unique.add(n);
   }
 
-  let unique_cards = uniqueCard();
-  function createDeck(unique_cards: ICard[]) {
-    let deck = unique_cards.slice(28);
-    let arr_field = unique_cards.slice(0, 28);
+  let card_pack: ICard[] = [...unique].map((index) => cards[index]);
+  let surface_cards = card_pack.slice(28);
+  let arr_field = card_pack.slice(0, 28);
 
-    return { deck, arr_field };
+  let chunkSize = 1;
+  const tableau: ICard[][] = [];
+  while (arr_field.length) {
+    tableau.push(arr_field.splice(0, chunkSize));
+    chunkSize += 1;
   }
 
-  const { deck: arr_deck, arr_field } = createDeck(unique_cards);
-  function chunkArray(arr_field: ICard[]) {
-    let chunkSize = 1;
-    const tableau: ICard[][] = [];
-    while (arr_field.length) {
-      tableau.push(arr_field.splice(0, chunkSize));
-      chunkSize += 1;
-    }
-    return { tableau };
-  }
+  return { card_pack, surface_cards, tableau };
 }
 
-export { unique_cards, chunkArray, arr_deck };
+export { GameStart };

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { type ICard, type GameState } from "../models";
-import { arr_deck, arr_chunk } from "../models";
+import { arr_deck, chunkArray } from "../models";
 
 interface CardProps {
   card: ICard;
