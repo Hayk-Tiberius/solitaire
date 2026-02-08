@@ -19,30 +19,42 @@ export interface CardSize {
 }
 
 let count = 52;
-let unique = new Set<number>();
-while (unique.size < count) {
-  let n = Math.floor(Math.random() * 52) + 1;
-  unique.add(n);
-}
-let arr_unique: ICard[] = [...unique].map((index) => cards[index]);
-let arr_deck: ICard[] = arr_unique;
 
-let arr_field: ICard[] = [];
-for (let i: number = 0; i < 28; i++) {
-  arr_field.push(arr_unique[i]);
+function uniqueCard(unique = new Set<number>()) {
+  while (unique.size < count) {
+    let n = Math.floor(Math.random() * 52);
+    unique.add(n);
+  }
+
+  let arr_unique: ICard[] = [...unique].map((index) => cards[index]);
+  return arr_unique;
 }
 
-let chunkSize = 1;
-const chunkedArray: ICard[][] = [];
-while (arr_field.length) {
-  chunkedArray.push(arr_field.splice(0, chunkSize));
-  chunkSize += 1;
+let unique_cards = uniqueCard();
+function createDeck(unique_cards: ICard[]) {
+  let deck = unique_cards;
+  let arr_field: ICard[] = [];
+  for (let i: number = 0; i < 28; i++) {
+    arr_field.push(unique_cards[i]);
+  }
+  for (let i: number = 0; i < 28; i++) {
+    deck.shift();
+  }
+  return { deck, arr_field };
 }
 
-console.log(chunkedArray);
+const { deck: arr_deck, arr_field } = createDeck(unique_cards);
 
-for (let i: number = 0; i < 28; i++) {
-  arr_deck.shift();
+function chunkArray(arr_field: ICard[]) {
+  let chunkSize = 1;
+  const chunkedArray: ICard[][] = [];
+  while (arr_field.length) {
+    chunkedArray.push(arr_field.splice(0, chunkSize));
+    chunkSize += 1;
+  }
+  return chunkedArray;
 }
 
-export { arr_unique, chunkedArray, arr_deck };
+const arr_chunk = chunkArray(arr_field);
+
+export { unique_cards, arr_chunk, arr_deck };

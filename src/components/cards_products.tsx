@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { type ICard } from "../models";
-import { arr_deck, chunkedArray } from "../models";
+import { arr_deck, arr_chunk } from "../models";
 
 interface CardProps {
   card: ICard;
@@ -13,6 +13,7 @@ export function Product(props: CardProps) {
   //// Хук для финального стэка тут /////
 
   const [clubs, setClubs] = useState<ICard[]>([]);
+  const [cards, setCards] = useState<ICard[][]>(arr_chunk);
   const [spades, setSpades] = useState<ICard[]>([]);
   const [diamonds, setDiamonds] = useState<ICard[]>([]);
   const [hearts, setHearts] = useState<ICard[]>([]);
@@ -54,8 +55,8 @@ export function Product(props: CardProps) {
         <section className="finalStack">
           <div className="clubs_stack">Крести {clubs.length}</div>
           <div className="spades_stack">Пики {clubs.length}</div>
-          <div className="diamonds_stack">Бубе</div>
-          <div className="hearts_stack">Сердца</div>
+          <div className="diamonds_stack">Бубе {clubs.length}</div>
+          <div className="hearts_stack">Сердца {clubs.length}</div>
         </section>
         <section
           className="field"
@@ -66,9 +67,11 @@ export function Product(props: CardProps) {
               {Array.from({ length: divIndex + 1 }, (_, spanIndex) => (
                 <span
                   key={`span-${divIndex}-${spanIndex}`}
-                  onClick={() => nextIndexSpadesSuit(chunkedArray[divIndex][spanIndex])}
+                  onClick={() => {
+                    nextIndexSpadesSuit(arr_chunk[divIndex][spanIndex]);
+                  }}
                 >
-                  {`${chunkedArray[divIndex][spanIndex].name} of ${chunkedArray[divIndex][spanIndex].suit}`}
+                  {`${arr_chunk[divIndex][spanIndex].name} of ${arr_chunk[divIndex][spanIndex].suit}`}
                   <br />
                 </span>
               ))}
