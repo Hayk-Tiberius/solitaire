@@ -15,7 +15,6 @@ export const min: number = 1;
 export const max: number = cards.length;
 
 export interface GameState {
-  card_pack: ICard[];
   surface_cards: ICard[];
   tableau: ICard[][];
 }
@@ -43,7 +42,7 @@ function GameStart(): GameState {
     chunkSize += 1;
   }
 
-  return { card_pack, surface_cards, tableau };
+  return { surface_cards, tableau };
 }
 
 export { GameStart };

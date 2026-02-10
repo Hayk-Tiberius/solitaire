@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { type ICard, type GameState } from "../models";
-import { arr_deck, chunkArray } from "../models";
+import { GameStart } from "../models";
 
 interface CardProps {
   card: ICard;
 }
 
 export function Product(props: CardProps) {
-  const [array, _] = useState(arr_deck);
+  const [array, _] = useState<GameState>(() => GameStart());
   const [count, setCount] = useState(0);
 
   //// Хук для сбора финального стэка тут /////
@@ -50,7 +50,7 @@ export function Product(props: CardProps) {
   ////////////////////////////
 
   const nextIndex = () => {
-    count < arr_deck.length - 1 ? setCount(count + 1) : setCount(0);
+    count < array.surface_cards.length - 1 ? setCount(count + 1) : setCount(0);
   };
 
   const totalColumns: number = 7;
@@ -60,7 +60,7 @@ export function Product(props: CardProps) {
       <main>
         <section className="deck">
           <button onClick={nextIndex}>Next card</button>
-          <span>{`${array[count].name} of ${array[count].suit}`}</span>
+          <span>{`${array.surface_cards[count].name} of ${array.surface_cards[count].suit}`}</span>
         </section>
         <section className="finalStack">
           <div className="clubs_stack">Крести {clubs.length}</div>
@@ -78,10 +78,10 @@ export function Product(props: CardProps) {
                 <span
                   key={`span-${divIndex}-${spanIndex}`}
                   onClick={() => {
-                    addToFinalStack(arr_chunk[divIndex][spanIndex]);
+                    addToFinalStack(array.tableau[divIndex][spanIndex]);
                   }}
                 >
-                  {`${arr_chunk[divIndex][spanIndex].name} of ${arr_chunk[divIndex][spanIndex].suit}`}
+                  {`${array.tableau[divIndex][spanIndex].name} of ${array.tableau[divIndex][spanIndex].suit}`}
                   <br />
                 </span>
               ))}
