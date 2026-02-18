@@ -3,10 +3,17 @@ import { cards } from "./data/card";
 export interface ICard {
   id: number;
   rank: number;
-  suit: string;
+  suit: Suit;
   color: string;
   name: string;
   face: boolean;
+}
+type Suit = "Clubs" | "Spades" | "Diamonds" | "Hearts";
+
+export interface GameState {
+  stock: ICard[];
+  tableau: ICard[][];
+  foundation: Record<Suit, ICard[]>;
 }
 
 export const min: number = 1;
@@ -18,11 +25,9 @@ export interface CardSize {
   minId: number;
 }
 
-let count = 52;
-
 function uniqueCard(unique = new Set<number>()) {
-  while (unique.size < count) {
-    let n = Math.floor(Math.random() * 52);
+  while (unique.size < cards.length) {
+    let n = Math.floor(Math.random() * cards.length);
     unique.add(n);
   }
 
@@ -32,14 +37,9 @@ function uniqueCard(unique = new Set<number>()) {
 
 let unique_cards = uniqueCard();
 function createDeck(unique_cards: ICard[]) {
-  let deck = unique_cards;
-  let arr_field: ICard[] = [];
-  for (let i: number = 0; i < 28; i++) {
-    arr_field.push(unique_cards[i]);
-  }
-  for (let i: number = 0; i < 28; i++) {
-    deck.shift();
-  }
+  let deck = unique_cards.slice(28);
+  let arr_field = unique_cards.slice(0, 28);
+
   return { deck, arr_field };
 }
 

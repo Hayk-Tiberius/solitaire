@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { type ICard } from "../models";
+import { type ICard, type GameState } from "../models";
 import { arr_deck, arr_chunk } from "../models";
 
 interface CardProps {
@@ -13,27 +13,37 @@ export function Product(props: CardProps) {
   //// Хук для финального стэка тут /////
 
   const [clubs, setClubs] = useState<ICard[]>([]);
-  const [cards, setCards] = useState<ICard[][]>(arr_chunk);
   const [spades, setSpades] = useState<ICard[]>([]);
-  const [diamonds, setDiamonds] = useState<ICard[]>([]);
   const [hearts, setHearts] = useState<ICard[]>([]);
+  const [diamonds, setDiamonds] = useState<ICard[]>([]);
 
-  const nextIndexSpadesSuit = (card: ICard) => {
-    setClubs((prevClubs) => {
-      if (prevClubs.length === 0) {
-        if (card.suit === "Clubs" && card.rank === 1) {
-          return [...prevClubs, card];
+  const addToFinalStack = (card: ICard) => {
+    const suitMap = {
+      Clubs: { stack: clubs, fn: setClubs },
+      Spades: { stack: spades, fn: setSpades },
+      Hearts: { stack: hearts, fn: setHearts },
+      Diamonds: { stack: diamonds, fn: setDiamonds },
+    };
+
+    const current = suitMap[card.suit];
+
+    if (!current) return;
+
+    current.fn((prev) => {
+      if (prev.length === 0) {
+        if (card.rank === 1) {
+          return [card];
         }
-        return prevClubs;
+        return prev;
       }
 
-      const topCard = prevClubs[prevClubs.length - 1];
+      const topCard = prev[prev.length - 1];
 
-      if (card.suit === "Clubs" && card.rank === topCard.rank + 1) {
-        return [...prevClubs, card];
+      if (card.rank === topCard.rank + 1) {
+        return [...prev, card];
       }
 
-      return prevClubs;
+      return prev;
     });
   };
 
@@ -54,9 +64,9 @@ export function Product(props: CardProps) {
         </section>
         <section className="finalStack">
           <div className="clubs_stack">Крести {clubs.length}</div>
-          <div className="spades_stack">Пики {clubs.length}</div>
-          <div className="diamonds_stack">Бубе {clubs.length}</div>
-          <div className="hearts_stack">Сердца {clubs.length}</div>
+          <div className="spades_stack">Пики {spades.length}</div>
+          <div className="diamonds_stack">Бубны {diamonds.length}</div>
+          <div className="hearts_stack">Сердца {hearts.length}</div>
         </section>
         <section
           className="field"
@@ -68,7 +78,7 @@ export function Product(props: CardProps) {
                 <span
                   key={`span-${divIndex}-${spanIndex}`}
                   onClick={() => {
-                    nextIndexSpadesSuit(arr_chunk[divIndex][spanIndex]);
+                    addToFinalStack(arr_chunk[divIndex][spanIndex]);
                   }}
                 >
                   {`${arr_chunk[divIndex][spanIndex].name} of ${arr_chunk[divIndex][spanIndex].suit}`}
