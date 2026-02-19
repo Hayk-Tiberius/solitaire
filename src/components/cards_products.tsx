@@ -10,7 +10,7 @@ export function Product(props: CardProps) {
   const [array, _] = useState(arr_deck);
   const [count, setCount] = useState(0);
 
-  //// Хук для финального стэка тут /////
+  //// Хук для сбора финального стэка тут /////
 
   const [clubs, setClubs] = useState<ICard[]>([]);
   const [spades, setSpades] = useState<ICard[]>([]);
