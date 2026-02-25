@@ -7,7 +7,7 @@ interface CardProps {
 }
 
 export function Product(props: CardProps) {
-  const [array, _] = useState<GameState>(() => GameStart());
+  const [array, setArray] = useState<GameState>(() => GameStart());
   const [count, setCount] = useState(0);
 
   //// Хук для сбора финального стэка тут /////
@@ -40,6 +40,7 @@ export function Product(props: CardProps) {
       const topCard = prev[prev.length - 1];
 
       if (card.rank === topCard.rank + 1) {
+        array.tableau.map((chunk) => console.log(chunk.filter((data) => !clubs.includes(data))));
         return [...prev, card];
       }
 
@@ -47,7 +48,13 @@ export function Product(props: CardProps) {
     });
   };
 
-  ////////////////////////////
+  const deleteCardfromTableau = () => {
+    setArray((prev) => {
+      let new_tablue = prev.tableau.map((chunk) => chunk.filter((data) => !clubs.includes(data)));
+      return { ...prev, tableau: new_tablue };
+    });
+  };
+  ///////////////////////////////////
 
   const nextIndex = () => {
     count < array.surface_cards.length - 1 ? setCount(count + 1) : setCount(0);
@@ -79,6 +86,7 @@ export function Product(props: CardProps) {
                   key={`span-${divIndex}-${spanIndex}`}
                   onClick={() => {
                     addToFinalStack(array.tableau[divIndex][spanIndex]);
+                    deleteCardfromTableau();
                   }}
                 >
                   {`${array.tableau[divIndex][spanIndex].name} of ${array.tableau[divIndex][spanIndex].suit}`}
