@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { type ICard, type GameState } from "../models";
 import { GameStart } from "../models";
+import { cards } from "../data/card";
 
 interface CardProps {
   card: ICard;
@@ -9,8 +10,9 @@ interface CardProps {
 export function Product(props: CardProps) {
   const [array, setArray] = useState<GameState>(() => GameStart());
   const [count, setCount] = useState(0);
+  const [draggingCards, setDraggingCards] = useState<ICard[]>([]);
 
-  //// Хук для сбора финального стэка тут /////
+  //// Функция для сбора финального стэка тут /////
 
   const [clubs, setClubs] = useState<ICard[]>([]);
   const [spades, setSpades] = useState<ICard[]>([]);
@@ -48,13 +50,25 @@ export function Product(props: CardProps) {
     });
   };
 
+  //// Функция для удаления карты ////
+
   const deleteCardfromTableau = () => {
     setArray((prev) => {
       let new_tablue = prev.tableau.map((chunk) => chunk.filter((data) => !clubs.includes(data)));
       return { ...prev, tableau: new_tablue };
     });
   };
-  ///////////////////////////////////
+
+  //// Функция для передвижения карты ////
+
+  function dragStartHandler(e, card) {
+    console.log("drag", card);
+  }
+
+  function dropHandler(e, card) {
+    e.preventDefault();
+    console.log("drop", card);
+  }
 
   const nextIndex = () => {
     count < array.surface_cards.length - 1 ? setCount(count + 1) : setCount(0);
@@ -83,7 +97,10 @@ export function Product(props: CardProps) {
             <div key={`div-${divIndex}`}>
               {Array.from({ length: divIndex + 1 }, (_, spanIndex) => (
                 <span
+                  draggable={true}
                   key={`span-${divIndex}-${spanIndex}`}
+                  onDragStart={(e) => dragStartHandler(e, props.card)}
+                  onDrop={(e) => dropHandler(e, props.card)}
                   onClick={() => {
                     addToFinalStack(array.tableau[divIndex][spanIndex]);
                     deleteCardfromTableau();
