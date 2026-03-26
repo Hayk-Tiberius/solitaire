@@ -10,7 +10,6 @@ interface CardProps {
 export function Product(props: CardProps) {
   const [array, setArray] = useState<GameState>(() => GameStart());
   const [count, setCount] = useState(0);
-  const [draggingCards, setDraggingCards] = useState<ICard[]>([]);
 
   //// Функция для сбора финального стэка тут /////
 
@@ -42,7 +41,6 @@ export function Product(props: CardProps) {
       const topCard = prev[prev.length - 1];
 
       if (card.rank === topCard.rank + 1) {
-        array.tableau.map((chunk) => console.log(chunk.filter((data) => !clubs.includes(data))));
         return [...prev, card];
       }
 
@@ -54,8 +52,13 @@ export function Product(props: CardProps) {
 
   const deleteCardfromTableau = () => {
     setArray((prev) => {
-      let new_tablue = prev.tableau.map((chunk) => chunk.filter((data) => !clubs.includes(data)));
-      return { ...prev, tableau: new_tablue };
+      const allStacks = [...spades, ...clubs, ...hearts, ...diamonds];
+
+      let new_tableau = prev.tableau.map((chunk) =>
+        chunk.filter((data) => !allStacks.includes(data)),
+      );
+      console.log(new_tableau);
+      return { ...prev, tableau: new_tableau };
     });
   };
 
@@ -65,9 +68,21 @@ export function Product(props: CardProps) {
     console.log("drag", card);
   }
 
+  function dragLeaveHandler(e) {}
+
+  function dragOverHandler(e) {
+    e.preventDefault();
+  }
+
+  function dragEndHandler(e) {}
+
   function dropHandler(e, card) {
     e.preventDefault();
     console.log("drop", card);
+    setArray((prev) => {
+      let dropped_card = prev.tableau.map((drop) => drop.filter((data) => console.log(data)));
+      return { ...prev, tableau: dropped_card };
+    });
   }
 
   const nextIndex = () => {
@@ -95,18 +110,22 @@ export function Product(props: CardProps) {
         >
           {Array.from({ length: totalColumns }, (_, divIndex) => (
             <div key={`div-${divIndex}`}>
-              {Array.from({ length: divIndex + 1 }, (_, spanIndex) => (
+              {array.tableau[divIndex]?.map((card, spanIndex) => (
                 <span
+                  style={{ border: "1px solid black" }}
                   draggable={true}
                   key={`span-${divIndex}-${spanIndex}`}
-                  onDragStart={(e) => dragStartHandler(e, props.card)}
-                  onDrop={(e) => dropHandler(e, props.card)}
+                  onDragStart={(e) => dragStartHandler(e, card)}
+                  onDragLeave={(e) => dragLeaveHandler(e)}
+                  onDragOver={(e) => dragOverHandler(e)}
+                  onDragEnd={(e) => dragEndHandler(e)}
+                  onDrop={(e) => dropHandler(e, card)}
                   onClick={() => {
-                    addToFinalStack(array.tableau[divIndex][spanIndex]);
+                    addToFinalStack(card);
                     deleteCardfromTableau();
                   }}
                 >
-                  {`${array.tableau[divIndex][spanIndex].name} of ${array.tableau[divIndex][spanIndex].suit}`}
+                  {`${card.name} of ${card.suit}`}
                   <br />
                 </span>
               ))}
