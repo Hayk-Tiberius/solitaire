@@ -11,6 +11,7 @@ export function Product(props: CardProps) {
   const [array, setArray] = useState<GameState>(() => GameStart());
   const [count, setCount] = useState(0);
   const [draggedCard, setDraggedCard] = useState<ICard>();
+  const [draggedGroup, setDraggedGroup] = useState<ICard[]>([]);
 
   //// Функция для сбора финального стэка тут /////
 
@@ -29,34 +30,41 @@ export function Product(props: CardProps) {
 
     const current = suitMap[card.suit];
 
-    if (!current) return;
+    if (!current) return false;
 
-    current.fn((prev) => {
-      if (prev.length === 0) {
-        if (card.rank === 1) {
-          return [card];
+    const stack = current.stack;
+    if (
+      (stack.length > 0 && card.rank === stack[stack.length - 1].rank + 1) ||
+      (stack.length === 0 && card.rank === 1)
+    ) {
+      current.fn((prev) => {
+        if (prev.length === 0) {
+          if (card.rank === 1) {
+            return [card];
+          }
+          return prev;
         }
+
+        const topCard = prev[prev.length - 1];
+
+        if (card.rank === topCard.rank + 1) {
+          return [...prev, card];
+        }
+
         return prev;
-      }
-
-      const topCard = prev[prev.length - 1];
-
-      if (card.rank === topCard.rank + 1) {
-        return [...prev, card];
-      }
-
-      return prev;
-    });
+      });
+      return true;
+    }
   };
 
   //// Функция для удаления карты ////
 
-  const deleteCardfromTableau = () => {
+  const deleteCardfromTableau = (card: ICard) => {
     setArray((prev) => {
-      const allStacks = [...spades, ...clubs, ...hearts, ...diamonds];
-
       let new_tableau = prev.tableau.map((chunk) =>
-        chunk.filter((data) => !allStacks.includes(data)),
+        chunk
+          .filter((data) => data.id !== card.id)
+          .map((card, index, arr) => (index === arr.length - 1 ? { ...card, face: true } : card)),
       );
 
       return { ...prev, tableau: new_tableau };
@@ -77,6 +85,15 @@ export function Product(props: CardProps) {
   function dragStartHandler(e: React.DragEvent<HTMLElement>, card: ICard) {
     if (card.face == true) {
       setDraggedCard(card);
+      const columnIndex = array.tableau.findIndex((data) => data.includes(card));
+      if (columnIndex === -1) {
+        setDraggedGroup([card]);
+      } else {
+        const column = array.tableau[columnIndex];
+        const cardIndex = column.findIndex((data) => data.id == card.id);
+        const group = column.slice(cardIndex);
+        setDraggedGroup(group);
+      }
     }
   }
 
@@ -84,7 +101,7 @@ export function Product(props: CardProps) {
     e.preventDefault();
     if (!draggedCard) return;
 
-    if (index !== undefined) {
+    if (index !== undefined && array.tableau[index].length == 0) {
       setArray((prev) => {
         const dragged_card_column = prev.tableau.findIndex((data) => data.includes(draggedCard));
         const dragged_card_surface_column = prev.surface_cards.findIndex(
@@ -96,11 +113,11 @@ export function Product(props: CardProps) {
 
         if (dragged_card_surface_column === -1) {
           const deleteFromOldColumnTableau = prev.tableau[dragged_card_column]
-            .filter((card) => card.id !== draggedCard.id)
+            .filter((card) => !draggedGroup.some((g) => g.id === card.id))
             .map((card, index, arr) => (index === arr.length - 1 ? { ...card, face: true } : card));
           const newTableauColumn = prev.tableau.map((column, i) => {
             if (i === index) {
-              return [...column, draggedCard];
+              return [...column, ...draggedGroup];
             }
             if (i === dragged_card_column) {
               return deleteFromOldColumnTableau;
@@ -112,7 +129,7 @@ export function Product(props: CardProps) {
         } else {
           const newTableauColumn = prev.tableau.map((column, i) => {
             if (i === index) {
-              return [...column, draggedCard];
+              return [...column, ...draggedGroup];
             }
 
             return column;
@@ -134,7 +151,7 @@ export function Product(props: CardProps) {
           let dragged_card_surface = prev.surface_cards.findIndex(
             (data) => data.id == draggedCard.id,
           );
-          const newColumn = [...prev.tableau[dropped_card], draggedCard];
+          const newColumn = [...prev.tableau[dropped_card], ...draggedGroup];
 
           const deleteFromOldSurface = prev.surface_cards.filter(
             (card) => card.id !== draggedCard.id,
@@ -142,7 +159,7 @@ export function Product(props: CardProps) {
 
           if (dragged_card_surface === -1) {
             const deleteFromOldTableau = prev.tableau[dragged_card]
-              .filter((card) => card.id !== draggedCard.id)
+              .filter((card) => !draggedGroup.some((g) => g.id === card.id))
               .map((card, index, arr) =>
                 index === arr.length - 1 ? { ...card, face: true } : card,
               );
@@ -188,8 +205,9 @@ export function Product(props: CardProps) {
             draggable={true}
             onDragStart={(e) => dragStartHandler(e, array.surface_cards[count])} // Взятие карточки
             onClick={() => {
-              addToFinalStack(array.surface_cards[count]);
-              deleteCardfromSurface();
+              if (addToFinalStack(array.surface_cards[count])) {
+                deleteCardfromSurface();
+              }
             }}
           >{`${array.surface_cards[count].name} of ${array.surface_cards[count].suit}`}</span>
         </section>
@@ -218,8 +236,9 @@ export function Product(props: CardProps) {
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => dropHandler(e, card)} // Отпустили карту
                   onClick={() => {
-                    addToFinalStack(card);
-                    deleteCardfromTableau();
+                    if (addToFinalStack(card)) {
+                      deleteCardfromTableau(card);
+                    }
                   }}
                 >
                   {card.face ? `${card.name} of ${card.suit}` : "закрыт"}
