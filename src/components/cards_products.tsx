@@ -10,7 +10,7 @@ interface CardProps {
 export function Product(props: CardProps) {
   const [array, setArray] = useState<GameState>(() => GameStart());
   const [count, setCount] = useState(0);
-
+  const [draggedCard, setDraggedCard] = useState<ICard>();
   //// Функция для сбора финального стэка тут /////
 
   const [clubs, setClubs] = useState<ICard[]>([]);
@@ -64,8 +64,9 @@ export function Product(props: CardProps) {
 
   //// Функция для передвижения карты ////
 
-  function dragStartHandler(e, card) {
+  function dragStartHandler(e, card: ICard) {
     console.log("drag", card);
+    setDraggedCard(card);
   }
 
   function dragLeaveHandler(e) {}
@@ -76,12 +77,20 @@ export function Product(props: CardProps) {
 
   function dragEndHandler(e) {}
 
-  function dropHandler(e, card) {
+  function dropHandler(e, card: ICard) {
     e.preventDefault();
-    console.log("drop", card);
+    if (!draggedCard) return;
     setArray((prev) => {
-      let dropped_card = prev.tableau.map((drop) => drop.filter((data) => console.log(data)));
-      return { ...prev, tableau: dropped_card };
+      let dropped_card = prev.tableau.findIndex((data) => data.includes(card));
+      const newColumn = [...prev.tableau[dropped_card], draggedCard];
+      const newTableau = prev.tableau.map((column, index) => {
+        if (index === dropped_card) {
+          return newColumn;
+        }
+        return column;
+      });
+
+      return { ...prev, tableau: newTableau };
     });
   }
 
@@ -115,11 +124,11 @@ export function Product(props: CardProps) {
                   style={{ border: "1px solid black" }}
                   draggable={true}
                   key={`span-${divIndex}-${spanIndex}`}
-                  onDragStart={(e) => dragStartHandler(e, card)}
-                  onDragLeave={(e) => dragLeaveHandler(e)}
-                  onDragOver={(e) => dragOverHandler(e)}
-                  onDragEnd={(e) => dragEndHandler(e)}
-                  onDrop={(e) => dropHandler(e, card)}
+                  onDragStart={(e) => dragStartHandler(e, card)} // Взятие карточки
+                  onDragLeave={(e) => dragLeaveHandler(e)} // Выход за предел другой карты
+                  onDragEnd={(e) => dragEndHandler(e)} // Отпустили перемещение
+                  onDragOver={(e) => dragOverHandler(e)} // Над другим объектом
+                  onDrop={(e) => dropHandler(e, card)} // Отпустили карту
                   onClick={() => {
                     addToFinalStack(card);
                     deleteCardfromTableau();
