@@ -80,20 +80,34 @@ export function Product(props: CardProps) {
   function dropHandler(e, card: ICard) {
     e.preventDefault();
     if (!draggedCard) return;
-    setArray((prev) => {
-      let dropped_card = prev.tableau.findIndex((data) => data.includes(card));
-      const newColumn = [...prev.tableau[dropped_card], draggedCard];
-      const newTableau = prev.tableau.map((column, index) => {
-        if (index === dropped_card) {
-          return newColumn;
-        }
-        return column;
+    if (
+      card.color != draggedCard.color &&
+      card.rank == draggedCard.rank + 1 &&
+      array.tableau.find((data) => data.includes(card) && card.id == data[data.length - 1].id)
+    ) {
+      setArray((prev) => {
+        let dropped_card = prev.tableau.findIndex((data) => data.includes(card));
+        let dragged_card = prev.tableau.findIndex((data) => data.includes(draggedCard));
+        const newColumn = [...prev.tableau[dropped_card], draggedCard];
+        const deleteFromOldTableau = prev.tableau[dragged_card].filter(
+          (card) => card.id !== draggedCard.id,
+        );
+        const newTableau = prev.tableau.map((column, index) => {
+          if (index === dropped_card) {
+            return newColumn;
+          }
+          if (index === dragged_card) {
+            return deleteFromOldTableau;
+          }
+          return column;
+        });
+
+        return { ...prev, tableau: newTableau };
       });
-
-      return { ...prev, tableau: newTableau };
-    });
+    } else {
+      return;
+    }
   }
-
   const nextIndex = () => {
     count < array.surface_cards.length - 1 ? setCount(count + 1) : setCount(0);
   };
