@@ -58,6 +58,7 @@ export function Product(props: CardProps) {
       let new_tableau = prev.tableau.map((chunk) =>
         chunk.filter((data) => !allStacks.includes(data)),
       );
+
       return { ...prev, tableau: new_tableau };
     });
   };
@@ -73,58 +74,99 @@ export function Product(props: CardProps) {
 
   //// Функция для передвижения карты ////
 
-  function dragStartHandler(e, card: ICard) {
+  function dragStartHandler(e: React.DragEvent<HTMLElement>, card: ICard) {
     setDraggedCard(card);
   }
 
-  function dropHandler(e, card: ICard) {
+  function dropHandler(e: React.DragEvent<HTMLElement>, card?: ICard, index?: number) {
     e.preventDefault();
     if (!draggedCard) return;
-    if (
-      card.color != draggedCard.color &&
-      card.rank == draggedCard.rank + 1 &&
-      array.tableau.find((data) => data.includes(card) && card.id == data[data.length - 1].id)
-    ) {
+
+    if (index !== undefined) {
       setArray((prev) => {
-        let dropped_card = prev.tableau.findIndex((data) => data.includes(card));
-        let dragged_card = prev.tableau.findIndex((data) => data.includes(draggedCard));
-        let dragged_card_surface = prev.surface_cards.findIndex(
+        const dragged_card_column = prev.tableau.findIndex((data) => data.includes(draggedCard));
+        const dragged_card_surface_column = prev.surface_cards.findIndex(
           (data) => data.id == draggedCard.id,
         );
-        const newColumn = [...prev.tableau[dropped_card], draggedCard];
-
-        const deleteFromOldSurface = prev.surface_cards.filter(
+        const deleteFromOldColumnSurface = prev.surface_cards.filter(
           (card) => card.id !== draggedCard.id,
         );
 
-        if (dragged_card_surface === -1) {
-          const deleteFromOldTableau = prev.tableau[dragged_card].filter(
+        if (dragged_card_surface_column === -1) {
+          const deleteFromOldColumnTableau = prev.tableau[dragged_card_column].filter(
             (card) => card.id !== draggedCard.id,
           );
-          const newTableau = prev.tableau.map((column, index) => {
-            if (index === dropped_card) {
-              return newColumn;
+          const newTableauColumn = prev.tableau.map((column, i) => {
+            if (i === index) {
+              return [...column, draggedCard];
             }
-
-            if (index === dragged_card) {
-              return deleteFromOldTableau;
+            if (i === dragged_card_column) {
+              return deleteFromOldColumnTableau;
             }
 
             return column;
           });
-          return { ...prev, tableau: newTableau };
+          return { ...prev, tableau: newTableauColumn };
         } else {
-          const newTableau = prev.tableau.map((column, index) => {
-            if (index === dropped_card) {
-              return newColumn;
+          const newTableauColumn = prev.tableau.map((column, i) => {
+            if (i === index) {
+              return [...column, draggedCard];
             }
+
             return column;
           });
-          return { ...prev, tableau: newTableau, surface_cards: deleteFromOldSurface };
+          return { ...prev, tableau: newTableauColumn, surface_cards: deleteFromOldColumnSurface };
         }
       });
     } else {
-      return;
+      e.stopPropagation();
+      if (!card) return;
+      if (
+        card.color != draggedCard.color &&
+        card.rank == draggedCard.rank + 1 &&
+        array.tableau.find((data) => data.includes(card) && card.id == data[data.length - 1].id)
+      ) {
+        setArray((prev) => {
+          let dropped_card = prev.tableau.findIndex((data) => data.includes(card));
+          let dragged_card = prev.tableau.findIndex((data) => data.includes(draggedCard));
+          let dragged_card_surface = prev.surface_cards.findIndex(
+            (data) => data.id == draggedCard.id,
+          );
+          const newColumn = [...prev.tableau[dropped_card], draggedCard];
+
+          const deleteFromOldSurface = prev.surface_cards.filter(
+            (card) => card.id !== draggedCard.id,
+          );
+
+          if (dragged_card_surface === -1) {
+            const deleteFromOldTableau = prev.tableau[dragged_card].filter(
+              (card) => card.id !== draggedCard.id,
+            );
+            const newTableau = prev.tableau.map((column, index) => {
+              if (index === dropped_card) {
+                return newColumn;
+              }
+
+              if (index === dragged_card) {
+                return deleteFromOldTableau;
+              }
+
+              return column;
+            });
+            return { ...prev, tableau: newTableau };
+          } else {
+            const newTableau = prev.tableau.map((column, index) => {
+              if (index === dropped_card) {
+                return newColumn;
+              }
+              return column;
+            });
+            return { ...prev, tableau: newTableau, surface_cards: deleteFromOldSurface };
+          }
+        });
+      } else {
+        return;
+      }
     }
   }
   const nextIndex = () => {
@@ -158,7 +200,11 @@ export function Product(props: CardProps) {
           style={{ display: "grid", gridTemplateColumns: "repeat(7, 100px)" }}
         >
           {Array.from({ length: totalColumns }, (_, divIndex) => (
-            <div key={`div-${divIndex}`}>
+            <div
+              onDrop={(e) => dropHandler(e, undefined, divIndex)}
+              onDragOver={(e) => e.preventDefault()}
+              key={`div-${divIndex}`}
+            >
               {array.tableau[divIndex]?.map((card, spanIndex) => (
                 <span
                   style={{ border: "1px solid black" }}
