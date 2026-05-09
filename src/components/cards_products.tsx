@@ -74,7 +74,6 @@ export function Product(props: CardProps) {
   //// Функция для передвижения карты ////
 
   function dragStartHandler(e, card: ICard) {
-    console.log("drag", card);
     setDraggedCard(card);
   }
 
@@ -119,7 +118,6 @@ export function Product(props: CardProps) {
             if (index === dropped_card) {
               return newColumn;
             }
-
             return column;
           });
           return { ...prev, tableau: newTableau, surface_cards: deleteFromOldSurface };
