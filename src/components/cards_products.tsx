@@ -11,6 +11,7 @@ export function Product(props: CardProps) {
   const [array, setArray] = useState<GameState>(() => GameStart());
   const [count, setCount] = useState(0);
   const [draggedCard, setDraggedCard] = useState<ICard>();
+
   //// Функция для сбора финального стэка тут /////
 
   const [clubs, setClubs] = useState<ICard[]>([]);
@@ -57,8 +58,16 @@ export function Product(props: CardProps) {
       let new_tableau = prev.tableau.map((chunk) =>
         chunk.filter((data) => !allStacks.includes(data)),
       );
-      console.log(new_tableau);
       return { ...prev, tableau: new_tableau };
+    });
+  };
+
+  const deleteCardfromSurface = () => {
+    setArray((prev) => {
+      let new_surface = prev.surface_cards.filter(
+        (data) => data.id !== array.surface_cards[count].id,
+      );
+      return { ...prev, surface_cards: new_surface };
     });
   };
 
@@ -68,14 +77,6 @@ export function Product(props: CardProps) {
     console.log("drag", card);
     setDraggedCard(card);
   }
-
-  function dragLeaveHandler(e) {}
-
-  function dragOverHandler(e) {
-    e.preventDefault();
-  }
-
-  function dragEndHandler(e) {}
 
   function dropHandler(e, card: ICard) {
     e.preventDefault();
@@ -88,21 +89,41 @@ export function Product(props: CardProps) {
       setArray((prev) => {
         let dropped_card = prev.tableau.findIndex((data) => data.includes(card));
         let dragged_card = prev.tableau.findIndex((data) => data.includes(draggedCard));
+        let dragged_card_surface = prev.surface_cards.findIndex(
+          (data) => data.id == draggedCard.id,
+        );
         const newColumn = [...prev.tableau[dropped_card], draggedCard];
-        const deleteFromOldTableau = prev.tableau[dragged_card].filter(
+
+        const deleteFromOldSurface = prev.surface_cards.filter(
           (card) => card.id !== draggedCard.id,
         );
-        const newTableau = prev.tableau.map((column, index) => {
-          if (index === dropped_card) {
-            return newColumn;
-          }
-          if (index === dragged_card) {
-            return deleteFromOldTableau;
-          }
-          return column;
-        });
 
-        return { ...prev, tableau: newTableau };
+        if (dragged_card_surface === -1) {
+          const deleteFromOldTableau = prev.tableau[dragged_card].filter(
+            (card) => card.id !== draggedCard.id,
+          );
+          const newTableau = prev.tableau.map((column, index) => {
+            if (index === dropped_card) {
+              return newColumn;
+            }
+
+            if (index === dragged_card) {
+              return deleteFromOldTableau;
+            }
+
+            return column;
+          });
+          return { ...prev, tableau: newTableau };
+        } else {
+          const newTableau = prev.tableau.map((column, index) => {
+            if (index === dropped_card) {
+              return newColumn;
+            }
+
+            return column;
+          });
+          return { ...prev, tableau: newTableau, surface_cards: deleteFromOldSurface };
+        }
       });
     } else {
       return;
@@ -119,7 +140,14 @@ export function Product(props: CardProps) {
       <main>
         <section className="deck">
           <button onClick={nextIndex}>Next card</button>
-          <span>{`${array.surface_cards[count].name} of ${array.surface_cards[count].suit}`}</span>
+          <span
+            draggable={true}
+            onDragStart={(e) => dragStartHandler(e, array.surface_cards[count])} // Взятие карточки
+            onClick={() => {
+              addToFinalStack(array.surface_cards[count]);
+              deleteCardfromSurface();
+            }}
+          >{`${array.surface_cards[count].name} of ${array.surface_cards[count].suit}`}</span>
         </section>
         <section className="finalStack">
           <div className="clubs_stack">Крести {clubs.length}</div>
@@ -139,9 +167,7 @@ export function Product(props: CardProps) {
                   draggable={true}
                   key={`span-${divIndex}-${spanIndex}`}
                   onDragStart={(e) => dragStartHandler(e, card)} // Взятие карточки
-                  onDragLeave={(e) => dragLeaveHandler(e)} // Выход за предел другой карты
-                  onDragEnd={(e) => dragEndHandler(e)} // Отпустили перемещение
-                  onDragOver={(e) => dragOverHandler(e)} // Над другим объектом
+                  onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => dropHandler(e, card)} // Отпустили карту
                   onClick={() => {
                     addToFinalStack(card);
