@@ -38,7 +38,13 @@ function GameStart(): GameState {
   let chunkSize = 1;
   const tableau: ICard[][] = [];
   while (arr_field.length) {
-    tableau.push(arr_field.splice(0, chunkSize));
+    const arr_field_size = arr_field.splice(0, chunkSize);
+    tableau.push(
+      arr_field_size.map((el, index) =>
+        index == arr_field_size.length - 1 ? { ...el, face: true } : { ...el, face: false },
+      ),
+    );
+
     chunkSize += 1;
   }
 

@@ -75,7 +75,9 @@ export function Product(props: CardProps) {
   //// Функция для передвижения карты ////
 
   function dragStartHandler(e: React.DragEvent<HTMLElement>, card: ICard) {
-    setDraggedCard(card);
+    if (card.face == true) {
+      setDraggedCard(card);
+    }
   }
 
   function dropHandler(e: React.DragEvent<HTMLElement>, card?: ICard, index?: number) {
@@ -93,9 +95,9 @@ export function Product(props: CardProps) {
         );
 
         if (dragged_card_surface_column === -1) {
-          const deleteFromOldColumnTableau = prev.tableau[dragged_card_column].filter(
-            (card) => card.id !== draggedCard.id,
-          );
+          const deleteFromOldColumnTableau = prev.tableau[dragged_card_column]
+            .filter((card) => card.id !== draggedCard.id)
+            .map((card, index, arr) => (index === arr.length - 1 ? { ...card, face: true } : card));
           const newTableauColumn = prev.tableau.map((column, i) => {
             if (i === index) {
               return [...column, draggedCard];
@@ -139,9 +141,11 @@ export function Product(props: CardProps) {
           );
 
           if (dragged_card_surface === -1) {
-            const deleteFromOldTableau = prev.tableau[dragged_card].filter(
-              (card) => card.id !== draggedCard.id,
-            );
+            const deleteFromOldTableau = prev.tableau[dragged_card]
+              .filter((card) => card.id !== draggedCard.id)
+              .map((card, index, arr) =>
+                index === arr.length - 1 ? { ...card, face: true } : card,
+              );
             const newTableau = prev.tableau.map((column, index) => {
               if (index === dropped_card) {
                 return newColumn;
@@ -208,7 +212,7 @@ export function Product(props: CardProps) {
               {array.tableau[divIndex]?.map((card, spanIndex) => (
                 <span
                   style={{ border: "1px solid black" }}
-                  draggable={true}
+                  draggable={card.face}
                   key={`span-${divIndex}-${spanIndex}`}
                   onDragStart={(e) => dragStartHandler(e, card)} // Взятие карточки
                   onDragOver={(e) => e.preventDefault()}
@@ -218,7 +222,7 @@ export function Product(props: CardProps) {
                     deleteCardfromTableau();
                   }}
                 >
-                  {`${card.name} of ${card.suit}`}
+                  {card.face ? `${card.name} of ${card.suit}` : "закрыт"}
                   <br />
                 </span>
               ))}
