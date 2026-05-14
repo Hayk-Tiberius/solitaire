@@ -7,6 +7,7 @@ export interface ICard {
   color: string;
   name: string;
   face: boolean;
+  img: string;
 }
 type Suit = "Clubs" | "Spades" | "Diamonds" | "Hearts";
 

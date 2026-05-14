@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { type ICard, type GameState } from "../models";
 import { GameStart } from "../models";
+import card_back from "/img/card_back.png";
 import { cards } from "../data/card";
 
 interface CardProps {
@@ -207,9 +208,12 @@ export function Product(props: CardProps) {
             onClick={() => {
               if (addToFinalStack(array.surface_cards[count])) {
                 deleteCardfromSurface();
+                clubs.length + spades.length + hearts.length + diamonds.length === 52;
               }
             }}
-          >{`${array.surface_cards[count].name} of ${array.surface_cards[count].suit}`}</span>
+          >
+            <img src={array.surface_cards[count].img} alt="" />
+          </span>
         </section>
         <section className="finalStack">
           <div className="clubs_stack">Крести {clubs.length}</div>
@@ -238,15 +242,30 @@ export function Product(props: CardProps) {
                   onClick={() => {
                     if (addToFinalStack(card)) {
                       deleteCardfromTableau(card);
+                      clubs.length + spades.length + hearts.length + diamonds.length === 52;
                     }
                   }}
                 >
-                  {card.face ? `${card.name} of ${card.suit}` : "закрыт"}
+                  {card.face ? <img src={card.img} /> : <img src={card_back} />}
                   <br />
                 </span>
               ))}
             </div>
           ))}
+          <button
+            onClick={() => {
+              setArray(GameStart());
+              setClubs([]);
+              setSpades([]);
+              setHearts([]);
+              setDiamonds([]);
+              setCount(0);
+              setDraggedCard(undefined);
+              setDraggedGroup([]);
+            }}
+          >
+            Restart
+          </button>
         </section>
       </main>
     </>
