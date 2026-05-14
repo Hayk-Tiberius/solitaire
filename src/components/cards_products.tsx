@@ -2,6 +2,7 @@ import { useState } from "react";
 import { type ICard, type GameState } from "../models";
 import { GameStart } from "../models";
 import card_back from "/img/card_back.png";
+import "../styles.css";
 import { cards } from "../data/card";
 
 interface CardProps {
@@ -201,25 +202,63 @@ export function Product(props: CardProps) {
     <>
       <main>
         <section className="deck">
-          <button onClick={nextIndex}>Next card</button>
-          <span
-            draggable={true}
-            onDragStart={(e) => dragStartHandler(e, array.surface_cards[count])} // Взятие карточки
-            onClick={() => {
-              if (addToFinalStack(array.surface_cards[count])) {
-                deleteCardfromSurface();
-                clubs.length + spades.length + hearts.length + diamonds.length === 52;
-              }
-            }}
-          >
-            <img src={array.surface_cards[count].img} alt="" />
-          </span>
-        </section>
-        <section className="finalStack">
-          <div className="clubs_stack">Крести {clubs.length}</div>
-          <div className="spades_stack">Пики {spades.length}</div>
-          <div className="diamonds_stack">Бубны {diamonds.length}</div>
-          <div className="hearts_stack">Сердца {hearts.length}</div>
+          <div>
+            <button onClick={nextIndex}>Next card</button>
+            <span
+              draggable={true}
+              onDragStart={(e) => dragStartHandler(e, array.surface_cards[count])} // Взятие карточки
+              onClick={() => {
+                if (addToFinalStack(array.surface_cards[count])) {
+                  deleteCardfromSurface();
+                  setCount(0);
+                  clubs.length + spades.length + hearts.length + diamonds.length === 52;
+                }
+              }}
+            >
+              {array.surface_cards[count] && <img src={array.surface_cards[count].img} />}
+            </span>
+          </div>
+          <div>
+            <button
+              className="restart_button"
+              onClick={() => {
+                setArray(GameStart());
+                setClubs([]);
+                setSpades([]);
+                setHearts([]);
+                setDiamonds([]);
+                setCount(0);
+                setDraggedCard(undefined);
+                setDraggedGroup([]);
+              }}
+            >
+              <img src="/img/restart.png" alt="" className="restart_photo" />
+            </button>
+          </div>
+          <div className="finalStack">
+            <div className="finalStack">
+              <div className="clubs_stack">
+                <span className="stack_title">Крести</span>
+
+                {clubs.length > 0 && <img src={clubs[clubs.length - 1].img} alt="" />}
+              </div>
+
+              <div className="spades_stack">
+                <span className="stack_title">Пики</span>
+                {spades.length > 0 && <img src={spades[spades.length - 1].img} alt="" />}
+              </div>
+
+              <div className="diamonds_stack">
+                <span className="stack_title">Бубны</span>
+                {diamonds.length > 0 && <img src={diamonds[diamonds.length - 1].img} alt="" />}
+              </div>
+
+              <div className="hearts_stack">
+                <span className="stack_title">Сердца</span>
+                {hearts.length > 0 && <img src={hearts[hearts.length - 1].img} alt="" />}
+              </div>
+            </div>
+          </div>
         </section>
         <section
           className="field"
@@ -230,10 +269,10 @@ export function Product(props: CardProps) {
               onDrop={(e) => dropHandler(e, undefined, divIndex)}
               onDragOver={(e) => e.preventDefault()}
               key={`div-${divIndex}`}
+              className="field_item"
             >
               {array.tableau[divIndex]?.map((card, spanIndex) => (
                 <span
-                  style={{ border: "1px solid black" }}
                   draggable={card.face}
                   key={`span-${divIndex}-${spanIndex}`}
                   onDragStart={(e) => dragStartHandler(e, card)} // Взятие карточки
@@ -252,20 +291,6 @@ export function Product(props: CardProps) {
               ))}
             </div>
           ))}
-          <button
-            onClick={() => {
-              setArray(GameStart());
-              setClubs([]);
-              setSpades([]);
-              setHearts([]);
-              setDiamonds([]);
-              setCount(0);
-              setDraggedCard(undefined);
-              setDraggedGroup([]);
-            }}
-          >
-            Restart
-          </button>
         </section>
       </main>
     </>

@@ -1,0 +1,81 @@
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+.stack_title {
+  color: white;
+  position: absolute;
+}
+
+body {
+  height: 100%;
+}
+
+img {
+  width: 7vw;
+  height: 21vh;
+  position: absolute;
+}
+
+#root {
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  height: 100%;
+  background-image: url("/img/bg.jpg");
+}
+
+main {
+  width: 70%;
+  height: 50%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.restart_button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.restart_photo {
+  height: 10vh;
+  width: 15vw;
+}
+
+.clubs_stack,
+.spades_stack,
+.hearts_stack,
+.diamonds_stack {
+  width: 7vw;
+  height: 21vh;
+}
+
+.deck {
+  display: flex;
+  justify-content: space-between;
+}
+
+.field {
+  display: flex;
+  gap: 2vw;
+  justify-content: center;
+  align-content: center;
+}
+
+.field_item {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vh;
+}
+
+.finalStack {
+  display: flex;
+}
