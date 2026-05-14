@@ -3,13 +3,12 @@ import { type ICard, type GameState } from "../models";
 import { GameStart } from "../models";
 import card_back from "/img/card_back.png";
 import "../styles.css";
-import { cards } from "../data/card";
 
-interface CardProps {
-  card: ICard;
-}
+// interface CardProps {
+//   card: ICard;
+// }
 
-export function Product(props: CardProps) {
+export function Product() {
   const [array, setArray] = useState<GameState>(() => GameStart());
   const [count, setCount] = useState(0);
   const [draggedCard, setDraggedCard] = useState<ICard>();
@@ -84,7 +83,7 @@ export function Product(props: CardProps) {
 
   //// Функция для передвижения карты ////
 
-  function dragStartHandler(e: React.DragEvent<HTMLElement>, card: ICard) {
+  function dragStartHandler(card: ICard) {
     if (card.face == true) {
       setDraggedCard(card);
       const columnIndex = array.tableau.findIndex((data) => data.includes(card));
@@ -206,7 +205,7 @@ export function Product(props: CardProps) {
             <button onClick={nextIndex}>Next card</button>
             <span
               draggable={true}
-              onDragStart={(e) => dragStartHandler(e, array.surface_cards[count])} // Взятие карточки
+              onDragStart={() => dragStartHandler(array.surface_cards[count])} // Взятие карточки
               onClick={() => {
                 if (addToFinalStack(array.surface_cards[count])) {
                   deleteCardfromSurface();
@@ -275,7 +274,7 @@ export function Product(props: CardProps) {
                 <span
                   draggable={card.face}
                   key={`span-${divIndex}-${spanIndex}`}
-                  onDragStart={(e) => dragStartHandler(e, card)} // Взятие карточки
+                  onDragStart={() => dragStartHandler(card)} // Взятие карточки
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => dropHandler(e, card)} // Отпустили карту
                   onClick={() => {
