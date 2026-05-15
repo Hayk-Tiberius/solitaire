@@ -34,8 +34,11 @@ export function Product() {
     if (!current) return false;
 
     const stack = current.stack;
+
+    const column = array.tableau.find((data) => data.includes(card));
+    const isLast = column ? card.id === column[column.length - 1].id : true;
     if (
-      (stack.length > 0 && card.rank === stack[stack.length - 1].rank + 1) ||
+      (isLast && stack.length > 0 && card.rank === stack[stack.length - 1].rank + 1) ||
       (stack.length === 0 && card.rank === 1)
     ) {
       current.fn((prev) => {
