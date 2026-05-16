@@ -204,8 +204,10 @@ export function Product() {
     <>
       <main>
         <section className="deck">
-          <div>
-            <button onClick={nextIndex}>Next card</button>
+          <div className="next_card">
+            <button onClick={nextIndex}>
+              <img src="/img/next_card.png" alt="" style={{ position: "static" }} />
+            </button>
             <span
               draggable={true}
               onDragStart={() => dragStartHandler(array.surface_cards[count])} // Взятие карточки
@@ -217,7 +219,9 @@ export function Product() {
                 }
               }}
             >
-              {array.surface_cards[count] && <img src={array.surface_cards[count].img} />}
+              {array.surface_cards[count] && (
+                <img src={array.surface_cards[count].img} style={{ position: "static" }} />
+              )}
             </span>
           </div>
           <div>
@@ -234,29 +238,42 @@ export function Product() {
                 setDraggedGroup([]);
               }}
             >
-              <img src="/img/restart.png" alt="" className="restart_photo" />
+              <img
+                src="/img/restart.png"
+                alt=""
+                className="restart_photo"
+                style={{ position: "static" }}
+              />
             </button>
           </div>
           <div className="finalStack">
             <div className="finalStack">
               <div className="clubs_stack">
-                <span className="stack_title">Крести</span>
+                <span className="stack_title">
+                  <img src="/img/clubs_stack.png" alt="" />
+                </span>
 
                 {clubs.length > 0 && <img src={clubs[clubs.length - 1].img} alt="" />}
               </div>
 
               <div className="spades_stack">
-                <span className="stack_title">Пики</span>
+                <span className="stack_title">
+                  <img src="/img/spades_stack.png" alt="" />
+                </span>
                 {spades.length > 0 && <img src={spades[spades.length - 1].img} alt="" />}
               </div>
 
               <div className="diamonds_stack">
-                <span className="stack_title">Бубны</span>
+                <span className="stack_title">
+                  <img src="/img/diamonds_stack.png" alt="" />
+                </span>
                 {diamonds.length > 0 && <img src={diamonds[diamonds.length - 1].img} alt="" />}
               </div>
 
               <div className="hearts_stack">
-                <span className="stack_title">Сердца</span>
+                <span className="stack_title">
+                  <img src="/img/hearts_stack.png" alt="" />
+                </span>
                 {hearts.length > 0 && <img src={hearts[hearts.length - 1].img} alt="" />}
               </div>
             </div>
