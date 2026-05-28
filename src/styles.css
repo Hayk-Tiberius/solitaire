@@ -66,8 +66,9 @@ button {
 }
 
 .field {
+  grid-template-columns: repeat(7, 6vw);
   display: flex;
-  gap: 2vw;
+  gap: 3vw;
   justify-content: center;
   align-content: center;
 }
@@ -81,4 +82,17 @@ button {
 
 .finalStack {
   display: flex;
+}
+
+@media (orientation: landscape) and (max-width: 915px) {
+  .field {
+    gap: 0.5vw;
+    grid-template-columns: repeat(7, 8vw);
+  }
+  span {
+    height: 2vh;
+  }
+  .field_item {
+    width: 2vw;
+  }
 }

@@ -279,10 +279,7 @@ export function Product() {
             </div>
           </div>
         </section>
-        <section
-          className="field"
-          style={{ display: "grid", gridTemplateColumns: "repeat(7, 100px)" }}
-        >
+        <section className="field" style={{ display: "grid" }}>
           {Array.from({ length: totalColumns }, (_, divIndex) => (
             <div
               onDrop={(e) => dropHandler(e, undefined, divIndex)}
