@@ -32,8 +32,10 @@ img {
 
 main {
   width: 70%;
-  height: 50%;
+  height: 60%;
   display: flex;
+  margin-top: 2vh;
+  gap: 5vh;
   justify-content: space-between;
   flex-direction: column;
 }
@@ -74,6 +76,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 1.2vh;
+  height: 70vh;
 }
 
 .finalStack {
